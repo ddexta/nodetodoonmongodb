@@ -1,29 +1,25 @@
-const mongoose= require('mongoose')
-// mongoose.Promise=global.Promise
-mongoose.connect('mongodb://ddexta:balamutas1@ds229621.mlab.com:29621/ddextadb',{ useNewUrlParser: true })
-const db=mongoose.connection
-db.on('error',console.error.bind(console,'connection error'))
-db.once('open',()=>{
-const Todo= mongoose.model('Todo',{
-    text:{
-        type:String
-    },
-    completed:{
-        type:Boolean
-    },
-    completedAt:{
-        type:Number
-    }
+const {mongoose}=require('./db/mongoose')
+
+const express=require('express')
+const bodyParser=require('body-parser')
+
+
+const{Todo}=require('./modules/todo')
+const{User}=require('./modules/user')
+
+const app=express()
+app.use(bodyParser.json())
+
+
+app.post('/todos',(req,res)=>{
+    const todo=new Todo({
+        text:req.body.text
+    })
+    todo.save().then((doc)=>{
+        res.send(doc)
+    }).catch(e=>res.status(400).send(e))
 })
 
-const newTodo=new Todo({
-    text:'Cook dinner'
-})
-const newTodo2=new Todo({
-    text:'code a code',
-    completed:true,
-    completedAt:0
-})
-newTodo.save().then((res)=>console.log('saved todo',res)).catch((err)=>console.log('unable to save',err))
-newTodo2.save()
-})
+app.listen(3000,()=>console.log('started on port 3000'))
+
+
