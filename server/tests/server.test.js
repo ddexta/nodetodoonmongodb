@@ -1,6 +1,6 @@
 const expect=require('expect')
 const requestOn=require('supertest')
-
+const {ObjectID}=require('mongodb')
 
 const {app}=require('./../server')
 const {Todo}=require('./../modules/todo')
@@ -8,10 +8,13 @@ const {User}=require('./../modules/user')
 
 const todos=[
     {
-        text:'first test todo'
+        text:'first test todo',
+        _id:new ObjectID()
     },
     {
-        text:'second test todo'
+        text:'second test todo',
+        _id:new ObjectID()
+
     }
 ]
 
@@ -68,4 +71,29 @@ describe('get todo',()=>{
             })
             .end(done)
 })
+})
+
+describe('get todo by id',()=>{
+    it('should return todo by id',(done)=>{
+        requestOn(app)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todo.text).toBe(todos[0].text)
+            })
+            .end(done)
+    })
+    it('should return 4040 if todo not found',(done)=>{
+        const newID=new ObjectID().toHexString()
+        requestOn(app)
+            .get(`/todos/${newID}`)
+            .expect(404)
+            .end(done)
+    })
+    it('should return 404 for non object ids',(done)=>{
+        requestOn(app)
+            .get(`/todos/123`)
+            .expect(404)
+            .end(done)
+    })
 })
