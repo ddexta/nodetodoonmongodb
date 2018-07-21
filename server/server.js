@@ -3,7 +3,7 @@ const express=require('express')
 const bodyParser=require('body-parser')
 const {ObjectID}=require('mongodb')
 
-
+const port=process.inv.PORT || 3000
 
 const{Todo}=require('./modules/todo')
 const{User}=require('./modules/user')
@@ -41,7 +41,7 @@ app.get('/todos/:id',(req,res)=>{
     
 })
 
-app.listen(3000)
+app.listen(port,()=>console.log(`started server on ${port}`))
 
 module.exports={
     app
