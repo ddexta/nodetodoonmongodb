@@ -97,3 +97,37 @@ describe('get todo by id',()=>{
             .end(done)
     })
 })
+describe('deletion of single todo',()=>{
+    it('shoould delete and return todo by id',(done)=>{
+        requestOn(app)
+            .delete(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todo.text).toBe(todos[0].text)
+            })
+            .end((err,res)=>{
+                if(err){
+                    return done(err)
+                }
+                Todo.findById(todos[0]._id.toHexString())
+                    .then((todo)=>{
+                        expect(todo).toBeFalsy()
+                        done()
+                    })
+                    .catch(e=>done(e))
+            })
+    })
+    it('should return 404 if todo not found',(done)=>{
+        const newID=new ObjectID().toHexString()
+        requestOn(app)
+            .delete(`/todos/${newID}`)
+            .expect(404)
+            .end(done)
+    })
+    it('should return 404 invalid object ids',(done)=>{
+        requestOn(app)
+            .delete('/todos/123')
+            .expect(404)
+            .end(done)
+    })
+})
