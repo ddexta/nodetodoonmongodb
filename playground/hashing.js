@@ -1,24 +1,29 @@
 const jwt=require('jsonwebtoken')
+const bcrypt=require('bcryptjs')
+const password='123abc!'
 
-const data={
-    id:4
-}
+// bcrypt.genSalt(10,(err,salt)=>{
+//     bcrypt.hash(password,salt,(err,hash)=>{
+//         console.log(hash)
+//     })
+// })
 
-const token=jwt.sign(data,'123abc')
+const hashedPassword='$2a$10$mUgJsmKVpQeCiYIM7a6aq.oAsiFHLiY9Cj4xxq.ueDkkRrjduCa7C'
+bcrypt.compare(password,hashedPassword,(err,res)=>{
+    console.log(res)
+})
 
-// console.log(token)
- const decoded=jwt.verify(token,'123abc')
- console.log(decoded)
-
-
-
-
-
-
-
+// const data={
+//     id:4
+// }
 
 
 
+// const token=jwt.sign(data,'123abc')
+
+// // console.log(token)
+//  const decoded=jwt.verify(token,'123abc')
+//  console.log(decoded)
 
 
 
