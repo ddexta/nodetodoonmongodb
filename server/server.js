@@ -110,6 +110,12 @@ app.post('/users/login',(req,res)=>{
         .catch(err=>res.status(400).send(err))
 
 })
+
+app.delete('/users/me/token',authenticate,(req,res)=>{
+    req.user.removeToken(req.token).then(()=>{
+        res.status(200).send()
+    }).catch(e=>res.send(e))
+})
 app.listen(port,()=>console.log(`started server on ${port}`))
 
 module.exports={
