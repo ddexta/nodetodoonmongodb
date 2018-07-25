@@ -196,7 +196,7 @@ describe('POST /users',()=>{
                     expect(user).toBeTruthy()
                     expect(user.password).not.toBe(password)
                     done()
-                })
+                }).catch((err)=>done(err))
                 
             })
 
@@ -219,4 +219,54 @@ describe('POST /users',()=>{
             .expect(400)
             .end(done)    
         })
+})
+
+describe('POST /login',()=>{
+    it('should token come back if valid email and password',(done)=>{
+        const email=users[1].email
+        const password=users[1].password
+        requestOn(app)
+            .post('/users/login')
+            .send({email,password})
+            .expect(200)
+            .expect((res)=>{
+                expect(res.headers['x-auth']).toBeTruthy()
+
+            })
+            .end((err,res)=>{
+                if(err){return done(err)}
+
+                User.findById(users[1]._id)
+                .then((user)=>{
+                    expect(user.tokens[0]).toMatchObject({
+                        access:'auth',
+                        token: res.headers['x-auth']
+                    })
+                    done()
+                })
+                .catch((err)=>done(err))})
+                
+    })
+    it('should reject on invalid login',(done)=>{
+        const email=users[1].email
+        const password='joel5555'
+        requestOn(app)
+            .post('/users/login')
+            .send({email,password})
+            .expect(400)
+            .expect((res)=>{
+                expect(res.headers['x-auth']).toBeFalsy()
+
+            })
+            .end((err,res)=>{
+                if(err){return done(err)}
+
+                User.findById(users[1]._id)
+                .then((user)=>{
+                    expect(user.tokens.length).toBe(0)
+                    done()
+                })
+                .catch((err)=>done(err))})
+
+    })
 })
